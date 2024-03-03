@@ -1,24 +1,24 @@
 #include "MeshValid.h"
 #include "includes.h"
 
+const MENUITEMS meshValidItems = {
+  // title
+  LABEL_MESH_VALID,
+  // icon             label
+  {
+    {ICON_PREHEAT,    LABEL_NULL},
+    {ICON_PREHEAT,    LABEL_NULL},
+    {ICON_PREHEAT,    LABEL_NULL},
+    {ICON_PREHEAT,    LABEL_NULL},
+    {ICON_PREHEAT,    LABEL_NULL},
+    {ICON_PREHEAT,    LABEL_NULL},
+    {ICON_NULL,       LABEL_NULL},
+    {ICON_BACK,       LABEL_BACK},
+  }
+};
+
 void menuMeshValid(void)
 {
-  MENUITEMS meshValidItems = {
-    // title
-    LABEL_MESH_VALID,
-    // icon             label
-    {
-      {ICON_PREHEAT,    LABEL_NULL},
-      {ICON_PREHEAT,    LABEL_NULL},
-      {ICON_PREHEAT,    LABEL_NULL},
-      {ICON_PREHEAT,    LABEL_NULL},
-      {ICON_PREHEAT,    LABEL_NULL},
-      {ICON_PREHEAT,    LABEL_NULL},
-      {ICON_NULL,       LABEL_NULL},
-      {ICON_BACK,       LABEL_BACK},
-    }
-  };
-
   KEY_VALUES key_num;
   PREHEAT_STORE preheatStore;
 
@@ -48,7 +48,7 @@ void menuMeshValid(void)
       // MESHVALID NYLON
       case KEY_ICON_5:
         mustStoreCmd("G28\n");
-        mustStoreCmd("G26 H%u B%u R99\n", preheatStore.preheat_temp[key_num], preheatStore.preheat_bed[key_num]);
+        mustStoreCmd("G26 H%u B%u R99\n", preheatStore.preheat_hotend[key_num], preheatStore.preheat_bed[key_num]);
         mustStoreCmd("G1 Z10 F%d\n", infoSettings.level_feedrate[FEEDRATE_Z]);
         mustStoreCmd("G1 X0 F%d\n", infoSettings.level_feedrate[FEEDRATE_XY]);
         refreshPreheatIcon(&preheatStore, key_num, false);

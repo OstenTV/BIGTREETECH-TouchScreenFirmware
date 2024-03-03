@@ -663,7 +663,7 @@ SD_Error SD_Init(void)
 
   /* SDIO Peripheral Low Level Init */
   //NVIC_Configuration();
- //Serial_Puts(0,"sd lowlevel\r\n");
+  //Serial_Put(0,"sd lowlevel\r\n");
   SD_LowLevel_Init();
 
   SDIO_DeInit();
@@ -673,7 +673,7 @@ SD_Error SD_Init(void)
   if (errorstatus != SD_OK)
   {
     /*!< CMD Response TimeOut (wait for CMDSENT flag) */
-  // Serial_Puts(0,"sd power on error\r\n");
+    //Serial_Put(0,"sd power on error\r\n");
     return(errorstatus);
   }
 
@@ -682,7 +682,7 @@ SD_Error SD_Init(void)
   if (errorstatus != SD_OK)
   {
     /*!< CMD Response TimeOut (wait for CMDSENT flag) */
-    // Serial_Puts(0,"sd init on error\r\n");
+    //Serial_Put(0,"sd init on error\r\n");
     return(errorstatus);
   }
 
@@ -712,7 +712,7 @@ SD_Error SD_Init(void)
   }
 if (errorstatus!=SD_OK)
 {
-  //Serial_Puts(0,"sd error\r\n");
+  //Serial_Put(0,"sd error\r\n");
 }
   return(errorstatus);
 }
@@ -1126,7 +1126,7 @@ SD_Error SD_GetCardInfo(SD_CardInfo *cardinfo)
     tmp = (uint8_t)((CSD_Tab[2] & 0x0000FF00) >> 8);
     cardinfo->SD_csd.DeviceSizeMul |= (tmp & 0x80) >> 7;
 
-    cardinfo->CardCapacity = (cardinfo->SD_csd.DeviceSize + 1) ;
+    cardinfo->CardCapacity = (cardinfo->SD_csd.DeviceSize + 1);
     cardinfo->CardCapacity *= (1 << (cardinfo->SD_csd.DeviceSizeMul + 2));
     cardinfo->CardBlockSize = 1 << (cardinfo->SD_csd.RdBlockLen);
     cardinfo->CardCapacity *= cardinfo->CardBlockSize;

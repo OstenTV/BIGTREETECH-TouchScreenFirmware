@@ -24,7 +24,7 @@ void ablUpdateStatus(bool succeeded)
       savingEnabled = false;
       tempTitle.index = LABEL_ABL_SETTINGS_UBL;
 
-      sprintf(&tempMsg[strlen(tempMsg)], "\n %s", textSelect(LABEL_BL_SMART_FILL));
+      sprintf(strchr(tempMsg, '\0'), "\n %s", textSelect(LABEL_BL_SMART_FILL));
       break;
 
     default:
@@ -37,7 +37,8 @@ void ablUpdateStatus(bool succeeded)
 
     if (savingEnabled && infoMachineSettings.EEPROM == 1)
     {
-      sprintf(&tempMsg[strlen(tempMsg)], "\n %s", textSelect(LABEL_EEPROM_SAVE_INFO));
+      sprintf(strchr(tempMsg, '\0'), "\n %s", textSelect(LABEL_EEPROM_SAVE_INFO));
+
       popupDialog(DIALOG_TYPE_SUCCESS, tempTitle.index, (uint8_t *) tempMsg, LABEL_CONFIRM, LABEL_CANCEL, saveEepromSettings, NULL, NULL);
     }
     else
@@ -66,10 +67,12 @@ void ablStart(void)
 
     case BL_UBL:  // if Unified Bed Leveling
       storeCmd("G29 P1\n");
-      // Run this multiple times since it only fills some missing points, not all.
+      storeCmd("G29 P3\n");  // run this multiple times since it only fills some missing points, not all
       storeCmd("G29 P3\n");
       storeCmd("G29 P3\n");
-      storeCmd("G29 P3\n");
+      // Find Mean Mesh Height: with C this will automatically execute a G29 P6 C[mean height].
+      // Ideally the Mesh is adjusted for a Mean Height of 0.00 and the Z-Probe measuring 0.0 at the Z homing position.
+      storeCmd("G29 P5 C\n");
       break;
 
     default:  // if any other Auto Bed Leveling
@@ -78,21 +81,15 @@ void ablStart(void)
   }
 
   if (infoMachineSettings.firmwareType != FW_REPRAPFW)
-  {
-    storeCmd("M118 A1 ABL Completed\n");
-  }
+    storeCmd("M118 P0 ABL Completed\n");
 }
 
 void ublSaveloadConfirm(void)
 {
   if (!ublIsSaving)
-  {
     storeCmd("G29 L%d\n", ublSlot);
-  }
   else
-  {
     ublSlotSaved = storeCmd("G29 S%d\n", ublSlot);
-  }
 }
 
 void menuUBLSaveLoad(void)
@@ -130,6 +127,7 @@ void menuUBLSaveLoad(void)
   while (MENU_IS(menuUBLSaveLoad))
   {
     key_num = menuKeyGetValue();
+
     switch (key_num)
     {
       case KEY_ICON_0:
@@ -137,20 +135,17 @@ void menuUBLSaveLoad(void)
       case KEY_ICON_2:
       case KEY_ICON_3:
         ublSlot = key_num;
+
         popupDialog(DIALOG_TYPE_QUESTION, UBLSaveLoadItems.title.index, LABEL_CONFIRMATION, LABEL_CONFIRM, LABEL_CANCEL, ublSaveloadConfirm, NULL, NULL);
         break;
 
       case KEY_ICON_7:
         if (ublSlotSaved == true && infoMachineSettings.EEPROM == 1)
-        {
-          ublSlotSaved = false;
           popupDialog(DIALOG_TYPE_QUESTION, LABEL_ABL_SETTINGS_UBL, LABEL_ABL_SLOT_EEPROM, LABEL_CONFIRM, LABEL_CANCEL, saveEepromSettings, NULL, NULL);
-        }
-        else
-        {
-          ublSlotSaved = false;
-          CLOSE_MENU();
-        }
+
+        ublSlotSaved = false;
+
+        CLOSE_MENU();
         break;
 
       default:
@@ -164,11 +159,13 @@ void menuUBLSaveLoad(void)
 void menuUBLSave(void)
 {
   ublIsSaving = true;
+
   OPEN_MENU(menuUBLSaveLoad);
 }
 
 void menuUBLLoad(void)
 {
   ublIsSaving = false;
+
   OPEN_MENU(menuUBLSaveLoad);
 }

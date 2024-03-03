@@ -2,10 +2,10 @@
 
 # BigTreeTech TFT Touchscreen
 
-![GitHub](https://img.shields.io/github/license/bigtreetech/bigtreetech-TouchScreenFirmware.svg)
+<a href="https://github.com/bigtreetech/BIGTREETECH-TouchScreenFirmware/blob/master/LICENSE"><img alt="license" src="https://img.shields.io/github/license/bigtreetech/bigtreetech-TouchScreenFirmware.svg"></a>
 [![GitHub contributors](https://img.shields.io/github/contributors/bigtreetech/bigtreetech-TouchScreenFirmware.svg)](https://github.com/bigtreetech/BIGTREETECH-TouchScreenFirmware/graphs/contributors)
-![GitHub Release Date](https://img.shields.io/github/release-date/bigtreetech/bigtreetech-TouchScreenFirmware.svg)
-[![Build Status](https://github.com/bigtreetech/BIGTREETECH-TouchScreenFirmware/workflows/Build%20Test/badge.svg?branch=master)](https://github.com/bigtreetech/bigtreetech-TouchScreenFirmware/actions)
+<a href="https://github.com/bigtreetech/BIGTREETECH-TouchScreenFirmware/archive/refs/heads/master.zip"><img alt="release date" src="https://img.shields.io/github/last-commit/bigtreetech/BIGTREETECH-TouchScreenFirmware/master.svg?label=release%20date"></a>
+[![Build Binaries](https://github.com/bigtreetech/BIGTREETECH-TouchScreenFirmware/actions/workflows/buildBinary.yml/badge.svg)](https://github.com/bigtreetech/BIGTREETECH-TouchScreenFirmware/actions/workflows/buildBinary.yml)
 
 Important information related to BigTreeTech's TFT touchscreen 3D printer controllers
 
@@ -85,8 +85,14 @@ Only the TFTs listed below are currently supported. Trying to install the firmwa
 **MKS TFT**
 
     MKS_TFT28_V3.0 and V4.0
+    MKS_TFT28_NEW_GENIUS
     MKS_TFT32_V1.3 and V1.4
-    MKS_TFT35_V1_0
+    MKS_TFT32L_V3.0
+    MKS_TFT35_V1.0
+
+**MKS GD TFT**
+
+    MKS_GD_TFT28_V1.2-4 (V1.2 and V1.4)
 
 **WARNING:** BTT does not officially provide MKS TFT hardware support. MKS TFT is maintained by open source contributors and BTT does not bear any risk of MKS TFT hardware using this firmware.
 
@@ -106,7 +112,7 @@ Main branch: **Master**
 ## Marlin Dependencies
 
 Minimum Marlin firmware version: **2.1.1**<br>
-Distribution date: **2022-08-06**<br>
+Distribution date: **2022-09-22**<br>
 Firmware source: https://github.com/MarlinFirmware/Marlin/releases<br>
 
 To use all the features and functionalities supported by the TFT,
@@ -118,6 +124,7 @@ the following options must be enabled in Marlin firmware.
 `BABYSTEPPING` (in Configuration_adv.h)<br>
 `AUTO_REPORT_TEMPERATURES` (in Configuration_adv.h)<br>
 `AUTO_REPORT_POSITION` (in Configuration_adv.h)<br>
+`EXTENDED_CAPABILITIES_REPORT` (in Configuration_adv.h)<br>
 `M115_GEOMETRY_REPORT` (in Configuration_adv.h)<br>
 `M114_DETAIL` (in Configuration_adv.h)<br>
 `REPORT_FAN_CHANGE` (in Configuration_adv.h)<br>
@@ -136,6 +143,16 @@ the following options must be enabled in Marlin firmware.
 `HOST_ACTION_COMMANDS` (in Configuration_adv.h)<br>
 `HOST_PROMPT_SUPPORT` (in Configuration_adv.h)<br>
 `HOST_STATUS_NOTIFICATIONS` (in Configuration_adv.h)<br>
+
+**Options to support M73 with host:**
+
+`Options to support dialog with host` (as pre requisite)<br>
+`SET_PROGRESS_MANUALLY` (in Configuration_adv.h)<br>
+`M73_REPORT` (in Configuration_adv.h)<br>
+
+**Options to support ADVANCED_OK with host:**
+
+`ADVANCED_OK` (in Configuration_adv.h)<br>
 
 **Options to support M600 with host & (Un)Load menu:**
 
@@ -229,13 +246,21 @@ Precompiled firmwares are available on [`Copy to SD Card root directory to updat
 
 For **BTT TFTs**, the firmwares use the naming convention `BIGTREE_TFT*_V*.*.*.x.bin`.
 
+For **BTT GD TFTs**, the firmwares use the naming convention `BIGTREE_GD_TFT*_V*.*.*.x.bin`
+
+![GD Chip](https://user-images.githubusercontent.com/46979052/187049050-2bf05b07-3a1a-43c9-a375-6ef53cf48850.png)
+
 For **MKS TFTs**:
 
 1. The firmwares use the naming convention `MKS_TFT*_V*.*.*.x.bin`
 2. Any binary file for an MKS firmware (e.g. `MKS_TFT28_V4.0.27.x.bin`) **MUST** be renamed to `MKSTFT*.bin` (e.g. `MKSTFT28.bin`, `MKSTFT35.bin` etc.) in order it can be recognized and installed by the TFT
-3. For MKS TFT35, two binary files are provided:
-   1. Encrypted version: Usable on a stock MKS TFT35 (based on a bootloader with encryption)
-   2. Unencrypted version: Usable with a bootloader without encryption
+
+For **MKS GD TFTs**:
+
+For MKS TFT28 mounting GD32 MCU (GigaDevice MCU) (like the newest version of Genious Pro), you need to:
+1. Rename the right binary (e.g. `MKS_GD_TFT28_V1_2_4.27.x.bin`) to `MKSTFT28EVO.bin`
+2. Create an empty file named `MKSTFT28.bin`
+3. Create two empty directories named `MKS_FONT` and `MKS_PIC`
 
 For example, for BTT TFT35 V3 select:
 
@@ -434,22 +459,40 @@ Please, see [Customization Guides](https://github.com/bigtreetech/BIGTREETECH-To
   <img src="https://user-images.githubusercontent.com/25599056/56637532-77115000-669e-11e9-809b-f6bc25412f75.png"></li>
 
 <li>After opening the project, edit <a href="platformio.ini"><code>platformio.ini</code></a> and change the <code>default_envs</code> to one that matches your TFT model and version:
-<pre>;BIGTREE_TFT35_V1_0
+<pre>;BIGTREE_TFT24_V1_1
+;BIGTREE_TFT28_V1_0
+;BIGTREE_TFT28_V3_0
+;BIGTREE_TFT35_V1_0
 ;BIGTREE_TFT35_V1_1
 ;BIGTREE_TFT35_V1_2
 ;BIGTREE_TFT35_V2_0
 ;BIGTREE_TFT35_V3_0
 ;BIGTREE_TFT35_E3_V3_0
-;BIGTREE_TFT28_V1_0
-;BIGTREE_TFT28_V3_0
-;BIGTREE_TFT24_V1_1
-;MKS_TFT32_V1_3
-;MKS_TFT32_V1_4
-;MKS_TFT32_V1_4_NOBL
+;BIGTREE_TFT35_B1_V3_0
+;BIGTREE_TFT43_V3_0
+;BIGTREE_TFT50_V3_0
+;BIGTREE_TFT70_V3_0
+
+;BIGTREE_GD_TFT24_V1_1
+;BIGTREE_GD_TFT35_V2_0
+;BIGTREE_GD_TFT35_V3_0
+;BIGTREE_GD_TFT35_E3_V3_0
+;BIGTREE_GD_TFT35_B1_V3_0
+;BIGTREE_GD_TFT43_V3_0
+;BIGTREE_GD_TFT50_V3_0
+;BIGTREE_GD_TFT70_V3_0
+
 ;MKS_TFT28_V3_0
 ;MKS_TFT28_V4_0
 ;MKS_TFT28_NEW_GENIUS
+;MKS_TFT32_V1_3
+;MKS_TFT32_V1_4
+;MKS_TFT32_V1_4_NOBL
+;MKS_TFT32L_V3_0
 ;MKS_TFT35_V1_0
+
+;MKS_GD_TFT28_V1_2_4
+
 [platformio]
 src_dir      = TFT
 boards_dir   = buildroot/boards
@@ -538,6 +581,7 @@ OctoPrint, ESP3D, Pronterface etc, connected to a TFT's serial port, can browse 
 **NOTES:**
 - TFT's media devices, if any, does not need to be initialized/released
 - When present, the G-code's options (e.g. `M27 C`) have the same meaning like in Marlin fw
+- G-code **M300 TFT P0** (with a duration of 0 ms) will mute (with the exception of touch type sound, if enabled) the TFT if not already muted while a duration different than 0 will unmute the TFT if not already unmuted
 
 ### Printing from Remote Host
 
@@ -545,19 +589,26 @@ OctoPrint, ESP3D, Pronterface etc, connected to a TFT's or mainboard's serial po
 
 | **ACTION**                  | **G-CODE**                                                                                                                                                                                                  |
 | :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **start**                   | `M118 A1 P0 action:print_start`                                                                                                                                                                             |
-| **end**                     | `M118 A1 P0 action:print_end`                                                                                                                                                                               |
-| **cancel**                  | `M118 A1 P0 action:cancel`                                                                                                                                                                                  |
-| **pause**                   | `M118 A1 P0 action:pause`                                                                                                                                                                                   |
-| **resume**                  | `M118 A1 P0 action:resume`                                                                                                                                                                                  |
-| **remaining time progress** | `M118 A1 P0 action:notification Time Left <XX>h<YY>m<ZZ>s`<br>or<br>`M117 Time Left <XX>h<YY>m<ZZ>s`<br><br>Examples:<br>`M118 A1 P0 action:notification Time Left 02h04m06s`<br>`M117 Time Left 02h04m06s` |
-| **print layer progress**    | `M118 A1 P0 action:notification Layer Left <XXXX>/<YYYY>`<br>or<br>`M117 Layer Left <XXXX>/<YYYY>`<br><br>Examples:<br>`M118 A1 P0 action:notification Layer Left 51/940`<br>`M117 Layer Left 51/940`       |
-| **file data progress**      | `M118 A1 P0 action:notification Data Left <XXXX>/<YYYY>`<br>or<br>`M117 Data Left <XXXX>/<YYYY>`<br><br>Examples:<br>`M118 A1 P0 action:notification Data Left 123/12345`<br>`M117 Data Left 123/12345`     |
+| **start**                   | `M118 P0 A1 action:print_start`                                                                                                                                                                             |
+| **end**                     | `M118 P0 A1 action:print_end`                                                                                                                                                                               |
+| **cancel**                  | `M118 P0 A1 action:cancel`                                                                                                                                                                                  |
+| **pause**                   | `M118 P0 A1 action:pause`                                                                                                                                                                                   |
+| **resume**                  | `M118 P0 A1 action:resume`                                                                                                                                                                                  |
+| **remaining time progress** | `M118 P0 A1 action:notification Time Left <XX>h<YY>m<ZZ>s`<br>or<br>`M117 Time Left <XX>h<YY>m<ZZ>s`<br><br>Examples:<br>`M118 P0 A1 action:notification Time Left 02h04m06s`<br>`M117 Time Left 02h04m06s` |
+| **print layer progress**    | `M118 P0 A1 action:notification Layer Left <XXXX>/<YYYY>`<br>or<br>`M117 Layer Left <XXXX>/<YYYY>`<br><br>Examples:<br>`M118 P0 A1 action:notification Layer Left 51/940`<br>`M117 Layer Left 51/940`       |
+| **file data progress**      | `M118 P0 A1 action:notification Data Left <XXXX>/<YYYY>`<br>or<br>`M117 Data Left <XXXX>/<YYYY>`<br><br>Examples:<br>`M118 P0 A1 action:notification Data Left 123/12345`<br>`M117 Data Left 123/12345`     |
 
 When the trigger `print_start` is received, the TFT switches to **Printing** menu.
-Once on Printing menu, the **pause**, **resume** and **stop** buttons on the menu will be disabled.
-That means, only the remote host will control the print.
-Only on print end or cancel (with triggers `print_end` or `cancel`) the TFT Printing menu is finalized (statistics available etc.) and unlocked (the menu can be closed).
+When the trigger `print_end` or `cancel` is received, the TFT Printing menu is finalized (statistics available etc.).
+When on Printing menu, pressing on the **pause**, **resume** and **stop** buttons will trigger to the remote host the following notifications, respectively:
+
+| **NOTIFICATION**            | **ACK MESSAGE**                       |
+| :-------------------------- | :------------------------------------ |
+| **pause**                   | `//action:notification remote pause`  |
+| **resume**                  | `//action:notification remote resume` |
+| **cancel**                  | `//action:notification remote cancel` |
+
+The remote host must properly handle the received notifications. For example, if `//action:notification remote pause` is received then the remote host must effectively pause the print and send `M118 P0 A1 action:pause` in order to trigger the pause action to the TFT.
 
 **NOTES:**
 - A new plugin on OctoPrint implementing the above protocol should be the preferable way (available to everyone)
